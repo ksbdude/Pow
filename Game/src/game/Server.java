@@ -12,7 +12,7 @@ public final class Server {
 
 	// Each player connects as a client
 	public static class Client{
-		//position
+		//position and velocity
 		int x;
 		int y;
 		float velx;
@@ -43,11 +43,7 @@ public final class Server {
 					int cid = 0; // client's ID
 					boolean stop = false;
 					try {
-						//if (clients.size() > 4) {
-						//	clients.clear();
-
-						//	cid = 0;
-						//}
+						// Sets up the network objects.
 						String address = socket.getInetAddress().getHostAddress();
 						socket.setTcpNoDelay(true);
 						System.out.printf("Client connected: %s%n", address);
@@ -56,25 +52,12 @@ public final class Server {
 						InputStream is = socket.getInputStream();
 						InputStreamReader isr = new InputStreamReader(is, "UTF-8");
 						BufferedReader br = new BufferedReader(isr);
-                		int packetNumber = 0; 
 
-
-						String[] read;
-						String output = "";
-						boolean foundID = false;
-						//for (int i = 0; i < clients.size(); i++) {
-						//	if (!foundID && (clients.get(i).x < 0 || clients.get(i).y < 0)) {
-						//		cid = i;
-						//		foundID = true;
-						//	} 
-						//}
-						//if (foundID = false) {
-						//	cid = clients.size();
-						//}
-						cid = clients.size();
-						System.out.println(cid);
-						clients.add(cid, new Client());
-						clients.get(cid).cout = out;
+						String[] read; // used to read input
+						String output = ""; //used to build output
+						cid = clients.size(); //client ID #
+						clients.add(cid, new Client()); //adds the new client to the clients list
+						clients.get(cid).cout = out; //updates value of relative PrintStream
 						clients.get(cid).active = true;
 						char[] buf = new char[1000];
 						int j = 0;
@@ -88,15 +71,15 @@ public final class Server {
 								timeOut = 0;
 								raw = br.readLine();
 								System.out.println("This is the raw: " + raw);
-								read = raw.split("_");
+								read = raw.split("_"); // packets are delimited by '_'
 								for (int k = 1; k < read.length; k++) {
 									System.out.println(read[k]);
 								switch (read[k].charAt(0)) {
-								case 'i':
+								case 'i': // send a client it's ID
 									output += "i";
 									output += Integer.toString(cid);
 									break;
-								case 'p':
+								case 'p': //Updates positions and velocity
 									String tempx = "";
 									String tempy = "";
 									String tempVelx = "";
@@ -126,17 +109,17 @@ public final class Server {
 									out.flush();
 									os.flush();
 									break;
-								case 'a':
+								case 'a': // player attacked
 									for (int i = 0; i < clients.size(); i++) {
 										clients.get(i).cout.println("a" + Integer.toString(cid));
 									}
 									break;
-								case 'c':
+								case 'c': // player hit someone
 									for (int i = 0; i < clients.size(); i++) {
 										clients.get(i).cout.println("c" + Integer.toString(cid));
 									}
 									break;
-								case 'd':
+								case 'd': //player died
 									for (int i = 0; i < clients.size(); i++) {
 										clients.get(i).cout.println("d" + Integer.toString(cid));
 									}
@@ -144,60 +127,35 @@ public final class Server {
 								}
 							}
 		
-					
+							// Handles innactivity by killing a player after 10 seconds
 							} else {
 								Thread.sleep(100);
 								timeOut++;
 							}
 							if (timeOut > 100) {
-								System.out.println("Disconnecting client " + cid + "!");
 								for (int i = 0; i < clients.size(); i++) {
 										clients.get(i).cout.println("d" + Integer.toString(cid));
 									}
 									Thread.sleep(500);
-							//	PrintStream outt;
-							//	for (int i = 0; i < clients.size(); i++) {
-
-							//		Client c = clients.get(i);
-							//		if (c.x >= 0 && c.y >= 0 && c.cout != null) {
-							//		outt = c.cout;
-							//		output+="_p" + Integer.toString(cid) + "-100,-100,-0,0";
-
-							//		clients.remove(clients.get(cid));
+							
 								}
 
-							//	}
-						//		clients.get(cid).active = false;
-								//clients.remove(clients.get(cid));
-							//	for (int i = 0; i < clients.size(); i++) {
-						//			if (clients.get(i).active == false) {
-							//			clients.remove(clients.get(i));
-						//			}
-						//		}
-						//		timeOut = 0;
-						//		stop = true;
-						//		break; //try continue
-						//	}
-
-					//		if (!stop) {
+							
 							for (int i = 0; i < clients.size(); i++) {
 								if (i != cid && clients.get(i).active) {
 									Client c = clients.get(i);
 									
 									output += "_p" + Integer.toString(i) +  "," + Integer.toString(c.x) + "," +  Integer.toString(c.y) + "," + Float.toString(c.velx) + "," + Float.toString(c.vely); 
-									packetNumber++;
 								}
 								
 							}
+
+							// sends the output
 							if (!output.equals("")){
 								out.println(output);
 								output = "";
 								Thread.sleep(40);
 							}
-
-						
-
-					//	}
 					}
 					} catch (Exception e) {
 						e.printStackTrace();
