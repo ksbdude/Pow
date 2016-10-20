@@ -1,4 +1,4 @@
-                                    
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -66,7 +66,7 @@ public final class Server {
 
 						int timeOut = 0;
 
-						while (true) {							
+						while (true) {
 							if (br.ready()) {
 								timeOut = 0;
 								raw = br.readLine();
@@ -126,7 +126,7 @@ public final class Server {
 									break;
 								}
 							}
-		
+
 							// Handles innactivity by killing a player after 10 seconds
 							} else {
 								Thread.sleep(100);
@@ -137,17 +137,17 @@ public final class Server {
 										clients.get(i).cout.println("d" + Integer.toString(cid));
 									}
 									Thread.sleep(500);
-							
+
 								}
 
-							
+
 							for (int i = 0; i < clients.size(); i++) {
 								if (i != cid && clients.get(i).active) {
 									Client c = clients.get(i);
-									
-									output += "_p" + Integer.toString(i) +  "," + Integer.toString(c.x) + "," +  Integer.toString(c.y) + "," + Float.toString(c.velx) + "," + Float.toString(c.vely); 
+
+									output += "_p" + Integer.toString(i) +  "," + Integer.toString(c.x) + "," +  Integer.toString(c.y) + "," + Float.toString(c.velx) + "," + Float.toString(c.vely);
 								}
-								
+
 							}
 
 							// sends the output
@@ -163,7 +163,7 @@ public final class Server {
 				};
 				Thread clientThread = new Thread(client);
 				clientThread.start();
-			}           
+			}
         }
     }
 }
