@@ -7,17 +7,19 @@ public class NetworkManager{
 
 	Socket socket;
 	InputStream is;
-    InputStreamReader isr;
-    BufferedReader br;
+   InputStreamReader isr;
+   BufferedReader br;
 	OutputStream os;
 	PrintStream out;
 	boolean initCorrect = false;
 	int packetNum = 0;
+	final static String ADDRESS = "127.0.0.1";
+	final static int PORT = 22222;
 
 	public NetworkManager (){
 
 		try{
-			this.socket = new Socket("192.168.50.81", 22222);
+			this.socket = new Socket(ADDRESS, PORT);
 			this.is = socket.getInputStream();
             this.isr = new InputStreamReader(is, "UTF-8");
             this.br = new BufferedReader(isr);
@@ -29,9 +31,9 @@ public class NetworkManager{
 			}
 		}catch( Exception e ){
 			e.printStackTrace();
-		}	
+		}
 	}
-	
+
 	//send object to server
 	public void sendObjects(String s) {
 		try {
